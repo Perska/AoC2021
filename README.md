@@ -1,5 +1,5 @@
-# AoC2020
-Programs for Advent of Code 2020  
+# AoC2021
+Programs for Advent of Code 2021
 Warning: contains quickly written code that has not been mostly cleaned and refactored.
 
 
@@ -39,6 +39,6 @@ end
 0
 
 ```
-To use this with batch, do `type input.txt | AoC2020.exe`  
+To use this with batch, do `type input.txt | AoC2021.exe`  
 This will run the first three programs.  
 Be sure to keep in the last newline.
