@@ -9,6 +9,7 @@ namespace AoC2021
 	partial class Program
 	{
 		// [UseSRL] // Uncomment if you wanna use SuperReadLine
+		// Remember, the input includes a trailing newline!
 		static void Day00(List<string> input)
 		{
 			// My code goes here...
