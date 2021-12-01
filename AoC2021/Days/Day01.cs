@@ -5,11 +5,12 @@ namespace AoC2021
 {
 	partial class Program
 	{
+		[NoTrailingNewLine]
 		static void Day01(List<string> input)
 		{
 			int current = int.Parse(input[0]);
 			int differing = 0;
-			for (int i = 1; i < input.Count - 1; i++)
+			for (int i = 1; i < input.Count; i++)
 			{
 				int next = int.Parse(input[i]);
 				if (current < next) differing++;
@@ -17,9 +18,9 @@ namespace AoC2021
 			}
 			Console.WriteLine($"Part 1: {differing} increased measurements!");
 
-			current = int.Parse(input[0]) + int.Parse(input[1]) + int.Parse(input[1]);
+			current = int.Parse(input[0]) + int.Parse(input[1]) + int.Parse(input[2]);
 			differing = 0;
-			for (int i = 1; i < input.Count - 3; i++)
+			for (int i = 1; i < input.Count - 2; i++)
 			{
 				int next = int.Parse(input[i]) + int.Parse(input[i + 1]) + int.Parse(input[i + 2]);
 				if (current < next) differing++;

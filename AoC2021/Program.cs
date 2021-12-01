@@ -21,6 +21,11 @@ namespace AoC2021
 
 		}
 
+		public class NoTrailingNewLineAttribute : Attribute
+		{
+
+		}
+
 		static void Main()
 		{
 			bool keepGoing = true;
@@ -48,6 +53,7 @@ namespace AoC2021
 					if (program != null)
 					{
 						bool useSRL = program.Method.GetCustomAttributes(typeof(UseSRLAttribute), false).Any();
+						bool trailingNewLine = !program.Method.GetCustomAttributes(typeof(NoTrailingNewLineAttribute), false).Any();
 						List<string> input = new List<string>();
 						Console.WriteLine("Please enter the program input. Once done, enter \"end\"\n(hint, right-click the window top bar for pasting)");
 						while (true)
@@ -58,9 +64,13 @@ namespace AoC2021
 							input.Add(line);
 						}
 						//input.RemoveAll(item => item.Length == 0);
-						if (input.LastOrDefault() != "")
+						if (input.LastOrDefault() != "" && trailingNewLine)
 						{
 							input.Add("");
+						}
+						if (input.Last() == "" && !trailingNewLine)
+						{
+							input.RemoveAt(input.Count - 1);
 						}
 						program(input);
 					}
