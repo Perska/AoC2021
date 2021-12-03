@@ -12,7 +12,7 @@ namespace AoC2021
 
 		public static List<DayProgram> days = new List<DayProgram>
 		{
-			Day01, Day02
+			Day01, Day02, Day03
 		};
 
 
