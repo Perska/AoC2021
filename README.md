@@ -11,30 +11,38 @@ For CMD: Right click the top bar and select Edit>Paste
 Or if you're one of those piping types you can put your input in a text file in a format like this:  
 ```
 1
-1721
-979
-366
-299
-675
-1456
+199
+200
+208
+210
+200
+207
+240
+269
+260
+263
 end
 2
-1-3 a: abcde
-1-3 b: cdefg
-2-9 c: ccccccccc
+forward 5
+down 5
+forward 8
+up 3
+down 8
+forward 2
 end
 3
-..##.......
-#...#...#..
-.#....#..#.
-..#.#...#.#
-.#...##..#.
-..#.##.....
-.#.#.#....#
-.#........#
-#.##...#...
-#...##....#
-.#..#...#.#
+00100
+11110
+10110
+10111
+10101
+01111
+00111
+11100
+10000
+11001
+00010
+01010
 end
 0
 
