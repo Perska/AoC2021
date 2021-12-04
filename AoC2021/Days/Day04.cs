@@ -1,19 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AoC2021
 {
 	partial class Program
 	{
-		[UseSRL] // Uncomment if you wanna use SuperReadLine
-		// [NoTrailingNewLine] // Uncomment to not include an extra blank line in the input at the end
+		[UseSRL]
 		static void Day04(List<string> input)
 		{
-            //input = System.IO.File.ReadAllLines("input.txt").ToList();
-
 			List<int> bingo = new List<int>();
 
 			foreach (string num in input[0].Split(','))
