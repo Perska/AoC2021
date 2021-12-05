@@ -11,8 +11,6 @@ namespace AoC2021
 		{
 			Regex regex = new Regex(@"^(\d+),(\d+) -> (\d+),(\d+)$");
 
-			bool part2 = false;
-		start:
 			Dictionary<(int, int), int> map = new Dictionary<(int, int), int>();
 
 			int maxX = 0, maxY = 0;
@@ -32,7 +30,6 @@ namespace AoC2021
 					maxX = Math.Max(Math.Max(x1, x2), maxX);
 					maxY = Math.Max(Math.Max(y1, y2), maxY);
 
-					
 					if (x1 == x2 && y1 == y2)
 					{
 						map[(x1, y1)] = gmap(x1, y1) + 1;
@@ -53,7 +50,36 @@ namespace AoC2021
 							map[(i, y1)] = gmap(i, y1) + 1;
 						}
 					}
-					else if (x1 != x2 && y1 != y2 && part2)
+				}
+			}
+
+			if (maxX <= 20 && maxY <= 20)
+			{
+				for (int i = 0; i <= maxY; i++)
+				{
+					for (int j = 0; j <= maxX; j++)
+					{
+						Console.Write(gmap(j, i));
+					}
+					Console.WriteLine();
+				}
+			}
+
+			Console.WriteLine($"Part 1: {map.Count(kv => kv.Value > 1)}");
+
+			foreach (string line in input)
+			{
+				if (line == "") continue;
+				if (regex.IsMatch(line))
+				{
+					Match match = regex.Match(line);
+					int x1, y1, x2, y2;
+					x1 = int.Parse(match.Groups[1].Value);
+					y1 = int.Parse(match.Groups[2].Value);
+					x2 = int.Parse(match.Groups[3].Value);
+					y2 = int.Parse(match.Groups[4].Value);
+
+					if (x1 != x2 && y1 != y2)
 					{
 						int dist = Math.Abs(x2 - x1);
 
@@ -93,13 +119,8 @@ namespace AoC2021
 				}
 			}
 
-			Console.WriteLine(map.Count(kv => kv.Value > 1));
+			Console.WriteLine($"Part 2: {map.Count(kv => kv.Value > 1)}");
 
-			if (!part2)
-			{
-				part2 = true;
-				goto start;
-			}
 
 			int gmap(int x, int y)
 			{
