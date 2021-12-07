@@ -48,7 +48,7 @@ namespace AoC2021
 
 				return fish.Sum();
 			}
-			
+
 			Console.WriteLine($"Part 1: {SimulateFish(80)}");
 			Console.WriteLine($"Part 2: {SimulateFish(256)}");
 		}
