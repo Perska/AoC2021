@@ -12,7 +12,7 @@ namespace AoC2021
 
 		public static List<DayProgram> days = new List<DayProgram>
 		{
-			Day01, Day02, Day03, Day04, Day05, Day06, Day07,
+			Day01, Day02, Day03, Day04, Day05, Day06, Day07, Day08,
 		};
 
 
@@ -29,7 +29,7 @@ namespace AoC2021
 		static void Main()
 		{
 			bool keepGoing = true;
-
+			
 			//Console.WriteLine(SuperReadLine());
 			while (keepGoing)
 			{
