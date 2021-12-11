@@ -19,8 +19,8 @@ namespace AoC2021
 				var split = line.Split('|');
 				if (split.Length == 2)
 				{
-					inputs.Add(split[0].SplitToStringArray(' ', true));
-					outputs.Add(split[1].SplitToStringArray(' ', true));
+					inputs.Add(split[0].SplitToStringArray(" ", true));
+					outputs.Add(split[1].SplitToStringArray(" ", true));
 					pinToNum.Add(new string[10]);
 				}
 			}
