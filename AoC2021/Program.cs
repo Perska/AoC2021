@@ -13,7 +13,7 @@ namespace AoC2021
 		public static List<DayProgram> days = new List<DayProgram>
 		{
 			Day01, Day02, Day03, Day04, Day05, Day06, Day07, Day08, Day09,
-			Day10, Day11
+			Day10, Day11, Day12
 		};
 
 
@@ -61,7 +61,7 @@ namespace AoC2021
 						{
 							string line = useSRL ? SuperReadLine() : Console.ReadLine();
 							if (line.Length == 254) Console.WriteLine("Line was 254 characters long... Coincidence or is SuperReadLine required?");
-							if (line.ToLowerInvariant().StartsWith("end")) break;
+							if (line.ToLowerInvariant() == "end") break;
 							input.Add(line);
 						}
 						//input.RemoveAll(item => item.Length == 0);
