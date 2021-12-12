@@ -1,6 +1,6 @@
 # AoC2021
 Programs for Advent of Code 2021
-Warning: contains quickly written code that has not been mostly cleaned and refactored.
+Warning: contains quickly written code that has not been mostly cleaned and refactored.  
 The current `visual` branch is experimental. It would add visualization through the Monogame Framework.
 
 
