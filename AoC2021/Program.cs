@@ -27,6 +27,7 @@ namespace AoC2021
 
 		}
 
+		[STAThread]
 		static void Main()
 		{
 			bool keepGoing = true;
@@ -56,14 +57,29 @@ namespace AoC2021
 						bool useSRL = program.Method.GetCustomAttributes(typeof(UseSRLAttribute), false).Any();
 						bool trailingNewLine = !program.Method.GetCustomAttributes(typeof(NoTrailingNewLineAttribute), false).Any();
 						List<string> input = new List<string>();
-						Console.WriteLine("Please enter the program input. Once done, enter \"end\"\n(hint, right-click the window top bar for pasting)");
+						Console.WriteLine("Please enter the program input. Once done, enter \"end\"\n(To instantly read the clipboard input, type \"clipboard\")");
 						while (true)
 						{
 							string line = useSRL ? SuperReadLine() : Console.ReadLine();
 							if (line.Length == 254) Console.WriteLine("Line was 254 characters long... Coincidence or is SuperReadLine required?");
 							if (line.ToLowerInvariant() == "end") break;
+							if (line.ToLowerInvariant() == "clipboard")
+							{
+								if (System.Windows.Forms.Clipboard.ContainsText())
+								{
+									string clipboard = System.Windows.Forms.Clipboard.GetText();
+									input.AddRange(clipboard.Split(new string[] { "\r\n", "\n", "\r" }, StringSplitOptions.None));
+									Console.WriteLine($"Successfully read {clipboard.Length} characters of text.");
+									break;
+								}
+								else
+								{
+									Console.WriteLine("The clipboard didn't contain any text.");
+								}
+							}
 							input.Add(line);
 						}
+						;
 						//input.RemoveAll(item => item.Length == 0);
 						if (input.LastOrDefault() != "" && trailingNewLine)
 						{
