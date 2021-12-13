@@ -74,8 +74,29 @@ namespace AoC2021
 				//Application.Run();
 				//Application.Run(Window);
 			}
-
 			
+			public void DrawBox(Rectangle rectangle, Color color)
+			{
+				SpriteBatch.Draw(Pixel, rectangle, color);
+			}
+			
+			public void DrawLine(Vector2 from, Vector2 to, Color color)
+			{
+				DrawLine(from, to, color, 0, 0, WindowWidth - 1, WindowHeight - 1);
+			}
+
+			public void DrawLine(Vector2 from, Vector2 to, Color color, int minX, int minY, int maxX, int maxY)
+			{
+				from = (from - new Vector2(minX, minY)) / new Vector2(maxX - minX, maxY - minY) * new Vector2(WindowWidth - 1, WindowHeight - 1);
+				to = (to - new Vector2(minX, minY)) / new Vector2(maxX - minX, maxY - minY) * new Vector2(WindowWidth - 1, WindowHeight - 1);
+				SpriteBatch.Draw(Pixel, new Vector2(from.X, from.Y),
+					null, color,
+					(float)Math.Atan2(to.Y - from.Y, to.X - from.X) + (float)Math.PI * 2,
+					Vector2.Zero,
+					new Vector2((float)Math.Ceiling(Vector2.Distance(from, to)), 1),
+					0, 0);
+			}
+
 		}
 	}
 }

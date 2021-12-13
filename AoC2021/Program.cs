@@ -59,13 +59,18 @@ namespace AoC2021
 			visual.GraphicsDevice.Present();
 		}
 
-		static void StartDraw()
+		static bool AutoSpriteBatch;
+
+		static void StartDraw(bool autoSpriteBatch = true)
 		{
+			AutoSpriteBatch = autoSpriteBatch;
+			if (autoSpriteBatch) visual.SpriteBatch.Begin();
 			visual.GraphicsDevice.SetRenderTarget(visual.RenderTarget);
 		}
 
 		static void StopDraw()
 		{
+			if (AutoSpriteBatch) visual.SpriteBatch.End();
 			visual.GraphicsDevice.SetRenderTarget(null);
 			visual.GraphicsDevice.Clear(Color.Black);
 			visual.SpriteBatch.Begin();
@@ -176,13 +181,13 @@ namespace AoC2021
 						}
 
 						List<string> input = new List<string>();
-						Console.WriteLine("Please enter the program input. Once done, enter \"end\"\n(To instantly read the clipboard input, type \"clipboard\")");
+						Console.WriteLine("Please enter the program input. Once done, enter \"end\"\n(To instantly read the clipboard input, type \"paste\")");
 						while (true)
 						{
 							string line = useSRL ? SuperReadLine() : Console.ReadLine();
 							if (line.Length == 254) Console.WriteLine("Line was 254 characters long... Coincidence or is SuperReadLine required?");
 							if (line.ToLowerInvariant() == "end") break;
-							if (line.ToLowerInvariant() == "clipboard")
+							if (line.ToLowerInvariant() == "paste")
 							{
 								if (System.Windows.Forms.Clipboard.ContainsText())
 								{
