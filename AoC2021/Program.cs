@@ -75,11 +75,11 @@ namespace AoC2021
 								else
 								{
 									Console.WriteLine("The clipboard didn't contain any text.");
+									continue;
 								}
 							}
 							input.Add(line);
 						}
-						;
 						//input.RemoveAll(item => item.Length == 0);
 						if (input.LastOrDefault() != "" && trailingNewLine)
 						{
