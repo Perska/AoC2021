@@ -3,12 +3,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
+using System.Diagnostics;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace AoC2021
 {
 	partial class Program
 	{
 		public delegate void DayProgram(List<string> input);
+
+		public delegate void DrawCall(dynamic args);
 
 		public static List<DayProgram> days = new List<DayProgram>
 		{
@@ -27,10 +33,117 @@ namespace AoC2021
 
 		}
 
+		public class HasVisualAttribute : Attribute
+		{
+
+		}
+
+
+		static void Draw(DrawCall drawCall, dynamic args)
+		{
+			/*long elaps;
+			while ((elaps = stopwatch.ElapsedMilliseconds) < next) ;
+			next = elaps + 20;*/
+
+			visual.GraphicsDevice.SetRenderTarget(visual.RenderTarget);
+			drawCall(args);
+			visual.GraphicsDevice.SetRenderTarget(null);
+
+			visual.GraphicsDevice.Clear(Color.Black);
+			visual.SpriteBatch.Begin();
+			visual.SpriteBatch.Draw(visual.RenderTarget, Vector2.Zero, Color.White);
+			visual.SpriteBatch.End();
+			Application.DoEvents();
+			//visual.Window.Focus();
+			//visual.Window.BringToFront();
+			visual.GraphicsDevice.Present();
+		}
+
+		static void StartDraw()
+		{
+			visual.GraphicsDevice.SetRenderTarget(visual.RenderTarget);
+		}
+
+		static void StopDraw()
+		{
+			visual.GraphicsDevice.SetRenderTarget(null);
+			visual.GraphicsDevice.Clear(Color.Black);
+			visual.SpriteBatch.Begin();
+			visual.SpriteBatch.Draw(visual.RenderTarget, Vector2.Zero, Color.White);
+			visual.SpriteBatch.End();
+
+			//Application.DoEvents();
+			//visual.Window.Focus();
+			//visual.Window.BringToFront();
+			visual.GraphicsDevice.Present();
+		}
+
+		static void InitDraw(dynamic args)
+		{
+			visual.GraphicsDevice.Clear(Color.Black);
+			visual.GraphicsDevice.SetRenderTarget(visual.RenderTarget);
+			visual.GraphicsDevice.Clear(Color.Transparent);
+			visual.GraphicsDevice.SetRenderTarget(null);
+		}
+		
+
+		static Visual visual;
+		static Stopwatch stopwatch;
+		static long next;
+
+		[STAThread]
 		static void Main()
 		{
 			bool keepGoing = true;
-			
+			bool busy = false;
+			bool ready = false;
+
+			System.Threading.Thread msg = new System.Threading.Thread(() =>
+			{
+				visual = new Visual();
+				//Application.Run(visual.Window);
+				while (!ready) ;
+				while (true)
+				{
+					long elaps;
+					while ((elaps = stopwatch.ElapsedMilliseconds) < next) ;
+					next = elaps + 100;
+					Application.DoEvents();
+					if (!busy)
+					{
+						visual.SpriteBatch.Begin();
+						visual.SpriteBatch.Draw(visual.RenderTarget, Vector2.Zero, Color.White);
+						visual.SpriteBatch.End();
+						visual.GraphicsDevice.Present();
+					}
+				}
+			});
+			msg.SetApartmentState(System.Threading.ApartmentState.STA);
+			msg.IsBackground = true;
+			msg.Start();
+
+			//visual = new Visual();
+
+			while (visual == null) ;
+
+			bool formOpen = true;
+
+			visual.Window.FormClosing += (object sender, FormClosingEventArgs e) =>
+			{
+				if (busy && e.CloseReason == CloseReason.UserClosing) e.Cancel = true;
+			};
+			visual.Window.FormClosed += (object sender, FormClosedEventArgs e) => { formOpen = false; Environment.Exit(0); };
+
+			stopwatch = new Stopwatch();
+			stopwatch.Start();
+			long x = Stopwatch.Frequency / 60;
+
+			busy = true;
+			Draw(InitDraw, null);
+			busy = false;
+
+			ready = true;
+
 			//Console.WriteLine(SuperReadLine());
 			while (keepGoing)
 			{
@@ -55,6 +168,13 @@ namespace AoC2021
 					{
 						bool useSRL = program.Method.GetCustomAttributes(typeof(UseSRLAttribute), false).Any();
 						bool trailingNewLine = !program.Method.GetCustomAttributes(typeof(NoTrailingNewLineAttribute), false).Any();
+						bool hasVisual = program.Method.GetCustomAttributes(typeof(HasVisualAttribute), false).Any();
+						if (!hasVisual)
+						{
+							Console.WriteLine($"The program for Day {day} does not have a visualization implemented.\nProceed anyway? (y/n)");
+							if (!Console.ReadLine().StartsWith("y")) continue;
+						}
+
 						List<string> input = new List<string>();
 						Console.WriteLine("Please enter the program input. Once done, enter \"end\"\n(hint, right-click the window top bar for pasting)");
 						while (true)
@@ -73,7 +193,10 @@ namespace AoC2021
 						{
 							input.RemoveAt(input.Count - 1);
 						}
+						busy = true;
+						Draw(InitDraw, null);
 						program(input);
+						busy = false;
 					}
 				}
 				else
