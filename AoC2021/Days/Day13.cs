@@ -26,7 +26,7 @@ namespace AoC2021
 			void Fold()
 			{
 				Match match = regex.Match(input[line]);
-				if (match == null) return;
+				if (!match.Success) { line++; return; }
 				long where = long.Parse(match.Groups[2].Value);
 				newMap.Clear();
 				if (match.Groups[1].Value == "x")
