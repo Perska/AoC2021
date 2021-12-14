@@ -40,7 +40,7 @@ namespace AoC2021
 
 			Console.WriteLine($"Part 2: {differing} increased measurements!");
 			
-			StartDraw();
+			StartDraw(false);
 			if (input.Count < 1000)
 			{
 				for (int i = 0; i < input.Count - 1; i++)
@@ -72,7 +72,7 @@ namespace AoC2021
 			}
 			StopDraw();
 
-			StartDraw();
+			StartDraw(false);
 			current = int.Parse(input[0]);
 			int current2 = int.Parse(input[0]) + int.Parse(input[1]) + int.Parse(input[2]);
 			for (int i = 1; i < input.Count; i++)

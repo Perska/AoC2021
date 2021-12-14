@@ -53,19 +53,18 @@ namespace AoC2021
 			visual.SpriteBatch.Begin();
 			visual.SpriteBatch.Draw(visual.RenderTarget, Vector2.Zero, Color.White);
 			visual.SpriteBatch.End();
-			Application.DoEvents();
-			//visual.Window.Focus();
-			//visual.Window.BringToFront();
+			//Application.DoEvents();
 			visual.GraphicsDevice.Present();
 		}
 
 		static bool AutoSpriteBatch;
 
-		static void StartDraw(bool autoSpriteBatch = true)
+		static void StartDraw(bool clear, bool autoSpriteBatch = true)
 		{
 			AutoSpriteBatch = autoSpriteBatch;
-			if (autoSpriteBatch) visual.SpriteBatch.Begin();
 			visual.GraphicsDevice.SetRenderTarget(visual.RenderTarget);
+			if (clear) visual.GraphicsDevice.Clear(Color.Transparent);
+			if (autoSpriteBatch) visual.SpriteBatch.Begin();
 		}
 
 		static void StopDraw()
@@ -92,9 +91,18 @@ namespace AoC2021
 		}
 		
 
+		static void Vsync()
+		{
+			waitScreen = true;
+			while (waitScreen) ;
+		}
+
 		static Visual visual;
 		static Stopwatch stopwatch;
 		static long next;
+
+		static bool waitScreen = false;
+		static int frameSpeed = 100;
 
 		[STAThread]
 		static void Main()
@@ -112,10 +120,12 @@ namespace AoC2021
 				{
 					long elaps;
 					while ((elaps = stopwatch.ElapsedMilliseconds) < next) ;
-					next = elaps + 100;
+					next = elaps + frameSpeed;
+					waitScreen = false;
 					Application.DoEvents();
 					if (!busy)
 					{
+						visual.GraphicsDevice.Clear(Color.Transparent);
 						visual.SpriteBatch.Begin();
 						visual.SpriteBatch.Draw(visual.RenderTarget, Vector2.Zero, Color.White);
 						visual.SpriteBatch.End();
