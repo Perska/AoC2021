@@ -29,5 +29,11 @@ namespace AoC2021
 		{
 			return Array.ConvertAll(str.SplitToStringArray(split, true), s => long.Parse(s));
 		}
+
+		public static V Read<K,V>(this Dictionary<K,V> dict, K key)
+		{
+			if (dict.ContainsKey(key)) return dict[key];
+			return default(V);
+		}
 	}
 }
