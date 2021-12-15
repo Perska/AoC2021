@@ -93,6 +93,7 @@ namespace AoC2021
 
 		static void Vsync()
 		{
+			if (frameSpeed == 0) return;
 			waitScreen = true;
 			while (waitScreen) ;
 		}
@@ -224,6 +225,7 @@ namespace AoC2021
 							input.RemoveAt(input.Count - 1);
 						}
 						busy = true;
+						frameSpeed = 20;
 						Draw(InitDraw, null);
 						program(input);
 						busy = false;

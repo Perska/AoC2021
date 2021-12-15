@@ -1,23 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Xna.Framework;
 
 namespace AoC2021
 {
 	partial class Program
 	{
 		[NoTrailingNewLine]
+		[HasVisual]
 		static void Day15(List<string> input)
 		{
 			int width = input[0].Length;
 			int height = input.Count;
 			int[] map = new int[width * height];
 			long[] shortestTo = new long[width * height];
+			long[] shortestToLast = new long[width * height];
 			List<long> paths = new List<long>();
 
 			for (int i = 0; i < shortestTo.Length; i++)
 			{
 				shortestTo[i] = long.MaxValue;
+				shortestToLast[i] = long.MaxValue;
 			}
 
 			for (int j = 0; j < height; j++)
@@ -29,6 +33,7 @@ namespace AoC2021
 			}
 
 			long worst = 9 * 200;
+			long max = 9 * 200;
 
 			Queue<((int x, int y) target, long cost)> upLeft     = new Queue<((int x, int y) target, long cost)>();
 			Queue<((int x, int y) target, long cost)> rightDown  = new Queue<((int x, int y) target, long cost)>();
@@ -50,19 +55,33 @@ namespace AoC2021
 				{
 					Paths(upLeft2.Dequeue());
 				}
+				
+				DrawMap(398);
 			}
 			Console.WriteLine(paths.Min());
+			DrawMap(398);
+			PlotPath();
 
+			for (int i = 0; i < 60; i++)
+			{
+				Vsync();
+			}
+
+			//return;
 
 			int[] mapOld;
 			(map, mapOld) = (new int[width * height * 25], map);
 			shortestTo = new long[width * height * 25];
+			shortestToLast = new long[width * height * 25];
 			for (int i = 0; i < shortestTo.Length; i++)
 			{
 				shortestTo[i] = long.MaxValue;
+				shortestToLast[i] = long.MaxValue;
 			}
 			paths.Clear();
+
 			worst = 9 * width + 8 + width + 7 * width + 6 * width + 5 * width + 9 * height + 8 + height + 7 * height + 6 * height + 5 * height;
+			max = 9 * width + 8 + width + 7 * width + 6 * width + 5 * width + 9 * height + 8 + height + 7 * height + 6 * height + 5 * height;
 
 			for (int i = 0; i < 5; i++)
 			{
@@ -85,6 +104,7 @@ namespace AoC2021
 			height *= 5;
 			
 			Paths(((0, 0), 0));
+			frameSpeed = 0;
 			while (rightDown.Count > 0 || upLeft.Count > 0)
 			{
 				(rightDown, rightDown2) = (rightDown2, rightDown);
@@ -97,7 +117,11 @@ namespace AoC2021
 				{
 					Paths(upLeft2.Dequeue());
 				}
+
+				DrawMap(2817);
 			}
+			DrawMap(2817);
+			PlotPath();
 			Console.WriteLine(paths.Min());
 
 			void Paths(((int x, int y) target, long cost) route)
@@ -164,6 +188,21 @@ namespace AoC2021
 						upLeft.Enqueue((target, route.cost + tileCost));
 					}
 				}
+				//frameSpeed = 16;
+				//int size = Visual.WindowHeight / height;
+				//
+				//StartDraw(false);
+				//for (int i = 0; i < height; i++)
+				//{
+				//	for (int j = 0; j < width; j++)
+				//	{
+				//		int tile = map[x + y * width];
+				//		int visit = (int)(shortestTo[x + y * width] * 1.0 / 398 * 255);
+				//		visual.SpriteBatch.Draw(visual.Pixel, new Rectangle(x * size, y * size, size, size), new Color(visit,visit,visit));
+				//	}
+				//}
+				//StopDraw();
+				//Vsync();
 			}
 
 			int ReadMap(int x, int y)
@@ -177,12 +216,14 @@ namespace AoC2021
 
 			void PlotPath()
 			{
-				Console.Clear();
+				frameSpeed = 5;
+				Vsync();
 				int sx = width - 1, sy = height - 1;
+				int size = Math.Min(Visual.WindowWidth / width, Visual.WindowHeight / height);
 				while (!(sx == 0 && sy == 0))
 				{
-					Console.SetCursorPosition(sx, sy);
-					Console.Write("#");
+					StartDraw(false);
+					visual.SpriteBatch.Draw(visual.Pixel, new Rectangle(sx * size, sy * size, size, size), Color.Red);
 					List<(long cost, (int x, int y) pos)> where = new List<(long cost, (int x, int y) pos)>
 					{
 						(GetCost(sx + 1, sy), (sx + 1, sy)),
@@ -192,12 +233,49 @@ namespace AoC2021
 					};
 					where = where.OrderBy(s => s.cost).ToList();
 					(sx, sy) = where.First().pos;
-					;
+					StopDraw();
+					Vsync();
 				}
-				Console.SetCursorPosition(sx, sy);
-				Console.Write("#");
+				StartDraw(false);
+				visual.SpriteBatch.Draw(visual.Pixel, new Rectangle(sx * size, sy * size, size, size), Color.Red);
+				StopDraw();
+				Vsync();
 
-				Console.SetCursorPosition(0, height);
+			}
+
+			void DrawMap(int cmax)
+			{
+				int size = Math.Min(Visual.WindowWidth / width, Visual.WindowHeight / height);
+				StartDraw(false);
+				for (int i = 0; i < height; i++)
+				{
+					for (int j = 0; j < width; j++)
+					{
+						int tile = map[j + i * width] - 1;
+						float visit = shortestTo[j + i * width] * 1.0f / cmax;
+						//visit = (float)Math.Pow(visit, 2.2);
+						if (visit < 0) visit = 0;
+						if (shortestTo[j + i * width] != shortestToLast[j + i * width])
+						{
+							visual.SpriteBatch.Draw(visual.Pixel, new Rectangle(j * size, i * size, size, size), new Color(255, 0, 0));
+							//visual.SpriteBatch.Draw(visual.Pixel, new Rectangle(j * size + width * size, i * size, size, size), new Color(0, 0, 255));
+						}
+						else
+						{
+							if (shortestTo[j + i * width] == long.MaxValue)
+								visual.SpriteBatch.Draw(visual.Pixel, new Rectangle(j * size, i * size, size, size), new Color(tile * 32, tile * 32, tile * 32));
+							else
+								visual.SpriteBatch.Draw(visual.Pixel, new Rectangle(j * size, i * size, size, size), new Color(visit, visit, visit));
+							//visual.SpriteBatch.Draw(visual.Pixel, new Rectangle(j * size + width * size, i * size, size, size), new Color(visit, visit, visit));
+						}
+					}
+				}
+				StopDraw();
+				Vsync();
+				for (int i = 0; i < shortestTo.Length; i++)
+				{
+					shortestToLast[i] = shortestTo[i];
+				}
 			}
 
 			long GetCost(int x, int y)
