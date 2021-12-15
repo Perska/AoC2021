@@ -14,14 +14,14 @@ namespace AoC2021
 			int width = input[0].Length;
 			int height = input.Count;
 			int[] map = new int[width * height];
-			long[] shortestTo = new long[width * height];
-			long[] shortestToLast = new long[width * height];
+			int[] shortestTo = new long[width * height];
+			int[] shortestToLast = new long[width * height];
 			List<long> paths = new List<long>();
 
 			for (int i = 0; i < shortestTo.Length; i++)
 			{
-				shortestTo[i] = long.MaxValue;
-				shortestToLast[i] = long.MaxValue;
+				shortestTo[i] = int.MaxValue;
+				shortestToLast[i] = int.MaxValue;
 			}
 
 			for (int j = 0; j < height; j++)
@@ -35,10 +35,10 @@ namespace AoC2021
 			long worst = 9 * 200;
 			long max = 9 * 200;
 
-			Queue<((int x, int y) target, long cost)> upLeft     = new Queue<((int x, int y) target, long cost)>();
-			Queue<((int x, int y) target, long cost)> rightDown  = new Queue<((int x, int y) target, long cost)>();
-			Queue<((int x, int y) target, long cost)> upLeft2    = new Queue<((int x, int y) target, long cost)>();
-			Queue<((int x, int y) target, long cost)> rightDown2 = new Queue<((int x, int y) target, long cost)>();
+			Queue<((int x, int y) target, int cost)> upLeft     = new Queue<((int x, int y) target, int cost)>();
+			Queue<((int x, int y) target, int cost)> rightDown  = new Queue<((int x, int y) target, int cost)>();
+			Queue<((int x, int y) target, int cost)> upLeft2    = new Queue<((int x, int y) target, int cost)>();
+			Queue<((int x, int y) target, int cost)> rightDown2 = new Queue<((int x, int y) target, int cost)>();
 			
 
 			Paths(((0, 0), 0));
@@ -46,11 +46,11 @@ namespace AoC2021
 			while (rightDown.Count > 0 || upLeft.Count > 0)
 			{
 				(rightDown, rightDown2) = (rightDown2, rightDown);
+				(upLeft, upLeft2) = (upLeft2, upLeft);
 				while (rightDown2.Count > 0)
 				{
 					Paths(rightDown2.Dequeue());
 				}
-				(upLeft, upLeft2) = (upLeft2, upLeft);
 				while (upLeft2.Count > 0)
 				{
 					Paths(upLeft2.Dequeue());
@@ -71,12 +71,12 @@ namespace AoC2021
 
 			int[] mapOld;
 			(map, mapOld) = (new int[width * height * 25], map);
-			shortestTo = new long[width * height * 25];
-			shortestToLast = new long[width * height * 25];
+			shortestTo = new int[width * height * 25];
+			shortestToLast = new int[width * height * 25];
 			for (int i = 0; i < shortestTo.Length; i++)
 			{
-				shortestTo[i] = long.MaxValue;
-				shortestToLast[i] = long.MaxValue;
+				shortestTo[i] = int.MaxValue;
+				shortestToLast[i] = int.MaxValue;
 			}
 			paths.Clear();
 
@@ -108,11 +108,11 @@ namespace AoC2021
 			while (rightDown.Count > 0 || upLeft.Count > 0)
 			{
 				(rightDown, rightDown2) = (rightDown2, rightDown);
+				(upLeft, upLeft2) = (upLeft2, upLeft);
 				while (rightDown2.Count > 0)
 				{
 					Paths(rightDown2.Dequeue());
 				}
-				(upLeft, upLeft2) = (upLeft2, upLeft);
 				while (upLeft2.Count > 0)
 				{
 					Paths(upLeft2.Dequeue());
@@ -124,7 +124,7 @@ namespace AoC2021
 			PlotPath();
 			Console.WriteLine(paths.Min());
 
-			void Paths(((int x, int y) target, long cost) route)
+			void Paths(((int x, int y) target, int cost) route)
 			{
 				if (route.cost >= worst) return;
 				int x, y;
@@ -145,22 +145,30 @@ namespace AoC2021
 					target = (x + 1, y);
 					if ((tileCost = ReadMap(target.x, target.y)) != 10)
 					{
-						rightDown.Enqueue((target, route.cost + tileCost));
+						tileCost += route.cost;
+						if (tileCost < worst && tileCost < shortestTo[target.x + target.y * width])
+							rightDown.Enqueue((target, tileCost));
 					}
 					target = (x, y + 1);
 					if ((tileCost = ReadMap(target.x, target.y)) != 10)
 					{
-						rightDown.Enqueue((target, route.cost + tileCost));
+						tileCost += route.cost;
+						if (tileCost < worst && tileCost < shortestTo[target.x + target.y * width])
+							rightDown.Enqueue((target, tileCost));
 					}
 					target = (x - 1, y);
 					if ((tileCost = ReadMap(target.x, target.y)) != 10)
 					{
-						upLeft.Enqueue((target, route.cost + tileCost));
+						tileCost += route.cost;
+						if (tileCost < worst && tileCost < shortestTo[target.x + target.y * width])
+							upLeft.Enqueue((target, tileCost));
 					}
 					target = (x, y - 1);
 					if ((tileCost = ReadMap(target.x, target.y)) != 10)
 					{
-						upLeft.Enqueue((target, route.cost + tileCost));
+						tileCost += route.cost;
+						if (tileCost < worst && tileCost < shortestTo[target.x + target.y * width])
+							upLeft.Enqueue((target, tileCost));
 					}
 				}
 				else
@@ -170,22 +178,30 @@ namespace AoC2021
 					target = (x, y + 1);
 					if ((tileCost = ReadMap(target.x, target.y)) != 10)
 					{
-						rightDown.Enqueue((target, route.cost + tileCost));
+						tileCost += route.cost;
+						if (tileCost < worst && tileCost < shortestTo[target.x + target.y * width])
+							rightDown.Enqueue((target, tileCost));
 					}
 					target = (x + 1, y);
 					if ((tileCost = ReadMap(target.x, target.y)) != 10)
 					{
-						rightDown.Enqueue((target, route.cost + tileCost));
+						tileCost += route.cost;
+						if (tileCost < worst && tileCost < shortestTo[target.x + target.y * width])
+							rightDown.Enqueue((target, tileCost));
 					}
 					target = (x, y - 1);
 					if ((tileCost = ReadMap(target.x, target.y)) != 10)
 					{
-						upLeft.Enqueue((target, route.cost + tileCost));
+						tileCost += route.cost;
+						if (tileCost < worst && tileCost < shortestTo[target.x + target.y * width])
+							upLeft.Enqueue((target, tileCost));
 					}
 					target = (x - 1, y);
 					if ((tileCost = ReadMap(target.x, target.y)) != 10)
 					{
-						upLeft.Enqueue((target, route.cost + tileCost));
+						tileCost += route.cost;
+						if (tileCost < worst && tileCost < shortestTo[target.x + target.y * width])
+							upLeft.Enqueue((target, tileCost));
 					}
 				}
 				//frameSpeed = 16;
