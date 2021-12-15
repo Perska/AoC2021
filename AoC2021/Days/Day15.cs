@@ -99,7 +99,6 @@ namespace AoC2021
 				}
 			}
 			Console.WriteLine(paths.Min());
-			PlotPath();
 
 			void Paths(((int x, int y) target, long cost) route)
 			{
