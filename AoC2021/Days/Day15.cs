@@ -40,7 +40,6 @@ namespace AoC2021
 			Queue<((int x, int y) target, long cost)> upLeft2    = new Queue<((int x, int y) target, long cost)>();
 			Queue<((int x, int y) target, long cost)> rightDown2 = new Queue<((int x, int y) target, long cost)>();
 			
-
 			Paths(((0, 0), 0));
 			
 			while (rightDown.Count > 0 || upLeft.Count > 0)
@@ -56,19 +55,20 @@ namespace AoC2021
 					Paths(upLeft2.Dequeue());
 				}
 				
-				DrawMap(398);
+				//DrawMap(398);
 			}
 			Console.WriteLine(paths.Min());
-			DrawMap(398);
-			PlotPath();
+			//DrawMap(398);
+			//PlotPath();
 
 			for (int i = 0; i < 60; i++)
 			{
-				Vsync();
+				//Vsync();
 			}
 
 			//return;
 
+			Draw(InitDraw, null);
 			int[] mapOld;
 			(map, mapOld) = (new int[width * height * 25], map);
 			shortestTo = new long[width * height * 25];
@@ -83,45 +83,68 @@ namespace AoC2021
 			worst = 9 * width + 8 + width + 7 * width + 6 * width + 5 * width + 9 * height + 8 + height + 7 * height + 6 * height + 5 * height;
 			max = 9 * width + 8 + width + 7 * width + 6 * width + 5 * width + 9 * height + 8 + height + 7 * height + 6 * height + 5 * height;
 
-			for (int i = 0; i < 5; i++)
+			worst = long.MaxValue;
+			int retry = 1;
+
+
+			int ox=width, oy=height;
+
+			while (retry < 10000)
 			{
-				for (int j = 0; j < 5; j++)
+				worst = long.MaxValue;
+
+				for (int i = 0; i < shortestTo.Length; i++)
 				{
-					for (int x = 0; x < width; x++)
+					shortestTo[i] = long.MaxValue;
+					shortestToLast[i] = long.MaxValue;
+				}
+
+				(width, height) = (ox, oy);
+
+				Random rng = new Random(retry); //13 no all mutate, 516 all, 523
+				for (int i = 0; i < 5; i++)
+				{
+					for (int j = 0; j < 5; j++)
 					{
-						for (int y = 0; y < height; y++)
+						for (int x = 0; x < width; x++)
 						{
-							int newTile = mapOld[x + y * width] + i + j;
-							if (newTile >= 10)
-								newTile -= 9;
-							map[(x + i * width) + (y + j * height) * width * 5] = newTile;
+							for (int y = 0; y < height; y++)
+							{
+								int newTile = rng.Next(1, 9);
+								if ((y == 9) && ((i + j) != 8) && (rng.Next(5) == 1)) newTile = 10;
+								if (rng.Next(77) < 3) newTile = 10;
+								if (mapOld[x + y * width] == 10) newTile = 10;
+								map[(x + i * width) + (y + j * height) * width * 5] = newTile;
+							}
 						}
 					}
 				}
-			}
 
-			width *= 5;
-			height *= 5;
-			
-			Paths(((0, 0), 0));
-			frameSpeed = 0;
-			while (rightDown.Count > 0 || upLeft.Count > 0)
-			{
-				(rightDown, rightDown2) = (rightDown2, rightDown);
-				while (rightDown2.Count > 0)
-				{
-					Paths(rightDown2.Dequeue());
-				}
-				(upLeft, upLeft2) = (upLeft2, upLeft);
-				while (upLeft2.Count > 0)
-				{
-					Paths(upLeft2.Dequeue());
-				}
+				width *= 5;
+				height *= 5;
 
+				Paths(((0, 0), 0));
+				frameSpeed = 0;
+				while (rightDown.Count > 0 || upLeft.Count > 0)
+				{
+					(rightDown, rightDown2) = (rightDown2, rightDown);
+					while (rightDown2.Count > 0)
+					{
+						Paths(rightDown2.Dequeue());
+					}
+					(upLeft, upLeft2) = (upLeft2, upLeft);
+					while (upLeft2.Count > 0)
+					{
+						Paths(upLeft2.Dequeue());
+					}
+
+					//DrawMap(2817);
+				}
 				DrawMap(2817);
+				PlotPath();
+				//Console.WriteLine($"end of seed {retry}");
+				retry++;
 			}
-			DrawMap(2817);
-			PlotPath();
 			Console.WriteLine(paths.Min());
 
 			void Paths(((int x, int y) target, long cost) route)
@@ -216,11 +239,11 @@ namespace AoC2021
 
 			void PlotPath()
 			{
-				frameSpeed = 5;
+				frameSpeed = 20;
 				Vsync();
 				int sx = width - 1, sy = height - 1;
 				int size = Math.Min(Visual.WindowWidth / width, Visual.WindowHeight / height);
-				while (!(sx == 0 && sy == 0))
+				while (!(sx == 0 && sy == 0) && (ReadMap(sx,sy) != 10))
 				{
 					StartDraw(false);
 					visual.SpriteBatch.Draw(visual.Pixel, new Rectangle(sx * size, sy * size, size, size), Color.Red);
@@ -236,10 +259,11 @@ namespace AoC2021
 					StopDraw();
 					Vsync();
 				}
+				if (sx == 0 && sy == 0) Console.WriteLine($"{retry} is a winner!");
 				StartDraw(false);
 				visual.SpriteBatch.Draw(visual.Pixel, new Rectangle(sx * size, sy * size, size, size), Color.Red);
 				StopDraw();
-				Vsync();
+				//Vsync();
 
 			}
 
@@ -271,7 +295,8 @@ namespace AoC2021
 					}
 				}
 				StopDraw();
-				Vsync();
+				frameSpeed = 0;
+				//Vsync();
 				for (int i = 0; i < shortestTo.Length; i++)
 				{
 					shortestToLast[i] = shortestTo[i];
