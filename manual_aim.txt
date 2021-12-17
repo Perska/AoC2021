@@ -1,0 +1,14 @@
+				/*while (true)
+				{
+					var key = Console.ReadKey(false);
+					if (key.Key == ConsoleKey.LeftArrow) sx--;
+					if (key.Key == ConsoleKey.RightArrow) sx++;
+					if (key.Key == ConsoleKey.UpArrow) sy++;
+					if (key.Key == ConsoleKey.DownArrow) sy--;
+					//int[] where = Console.ReadLine().SplitToIntArray(" ");
+					Console.Clear();
+					Console.WriteLine($"{x1},{x2} {y1},{y2}");
+					Console.WriteLine($"{sx},{sy}");
+					data = Shoot(sx, sy, x1, y1, x2, y2);
+					Console.WriteLine(data);
+				}*/
