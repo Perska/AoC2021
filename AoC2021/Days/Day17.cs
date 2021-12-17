@@ -27,11 +27,11 @@ namespace AoC2021
 				}
 
 				int bestScore = 0;
-				List<(int x, int y)> goodAims = new List<(int x, int y)>();
+				int goodAims = 0;
 				for (int i = 0; i < potentialX.Count; i++)
 				{
 					sx = potentialX[i];
-					for (int j = -1000; j < 1000; j++)
+					for (int j = y1; j < -y1; j++)
 					{
 						sy = j;
 						if (j == 0) ;
@@ -39,11 +39,11 @@ namespace AoC2021
 						if (data.highest.HasValue)
 						{
 							bestScore = Math.Max(bestScore, data.highest.Value);
-							goodAims.Add((sx, sy));
+							goodAims++;
 						}
 					}
 				}
-				Console.WriteLine($"Part 1: {bestScore}\nPart 2: {goodAims.Count}");
+				Console.WriteLine($"Part 1: {bestScore}\nPart 2: {goodAims}");
 			}
 			else
 			{
