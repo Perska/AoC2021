@@ -19,7 +19,7 @@ namespace AoC2021
 				int x2 = int.Parse(match.Groups[2].Value), y2 = int.Parse(match.Groups[4].Value);
 				int sx = 0, sy = 0;
 				List<int> potentialX = new List<int>();
-				(int x, int y, List<int> visitsX, int? highest) data = (0, 0, null, null);
+				(int x, int y, int? highest) data = (0, 0, null);
 				while (sx <= x2)
 				{
 					if (ScanShoot(sx, sy, x1, y1, x2, y2)) potentialX.Add(sx);
@@ -70,7 +70,7 @@ namespace AoC2021
 				return false;
 			}
 
-			(int x, int y, List<int> visitsX, int? highest) Shoot(int vx, int vy, int x1, int y1, int x2, int y2)
+			(int x, int y, int? highest) Shoot(int vx, int vy, int x1, int y1, int x2, int y2)
 			{
 				int mx = 0, my = 0;
 				int highest = 0;
@@ -83,10 +83,10 @@ namespace AoC2021
 					highest = Math.Max(highest, my);
 					if (x1 <= mx && y1 <= my && mx <= x2 && my <= y2)
 					{
-						return (mx, my, null, highest);
+						return (mx, my, highest);
 					}
 				}
-				return (mx, my, null, null);
+				return (mx, my, null);
 			}
 		}
 	}
