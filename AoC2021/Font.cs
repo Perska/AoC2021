@@ -49,7 +49,7 @@ namespace AoC2021
 			}
 		}
 
-		public void Draw(SpriteBatch sp, string text, Vector2 position, Color color)
+		public void Draw(SpriteBatch sp, string text, Vector2 position, Color color, int scale = 1)
 		{
 			int offsetX = 0;
 			int perLineY = 0;
@@ -83,9 +83,9 @@ namespace AoC2021
 				}
 				else
 				{
-					sp.Draw(Texture, position + new Vector2(offsetX, totalY), GetChar(text[i]), color);
-					offsetX += mono ? GetChar('#').Width : GetChar(text[i]).Width;
-					perLineY = Math.Max(GetChar(text[i]).Height, perLineY);
+					sp.Draw(Texture, position + new Vector2(offsetX, totalY), GetChar(text[i]), color, 0, Vector2.Zero, scale, 0, 0);
+					offsetX += (mono ? GetChar('#').Width : GetChar(text[i]).Width) * scale;
+					perLineY = Math.Max(GetChar(text[i]).Height * scale, perLineY);
 				}
 			}
 		}

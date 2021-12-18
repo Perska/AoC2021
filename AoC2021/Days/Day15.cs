@@ -14,8 +14,8 @@ namespace AoC2021
 			int width = input[0].Length;
 			int height = input.Count;
 			int[] map = new int[width * height];
-			int[] shortestTo = new long[width * height];
-			int[] shortestToLast = new long[width * height];
+			int[] shortestTo = new int[width * height];
+			int[] shortestToLast = new int[width * height];
 			List<long> paths = new List<long>();
 
 			for (int i = 0; i < shortestTo.Length; i++)

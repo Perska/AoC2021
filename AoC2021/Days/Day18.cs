@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Xna.Framework;
 
 namespace AoC2021
 {
@@ -54,6 +55,7 @@ namespace AoC2021
 		}
 		
 		[NoTrailingNewLine]
+		[HasVisual]
 		static void Day18(List<string> input)
 		{
 			List<TreeNode> pairs = new List<TreeNode>();
@@ -66,6 +68,66 @@ namespace AoC2021
 			}
 
 			TreeNode main = pairs[0];
+
+			frameSpeed = 1000;
+			DrawTree(main);
+
+			void DrawTree(TreeNode item)
+			{
+				StartDraw(true);
+				string disp = $"Advent of Code 2021 Day 18: Snailfish";
+				visual.Font.Draw(visual.SpriteBatch, disp, new Vector2(Visual.WindowWidth / 2, 16) + visual.Font.CenteredOffsetW(disp) * 2, Color.White, 2);
+				DrawTreeNode(item, 0, 0);
+				StopDraw();
+			}
+
+			void DrawTreeNode(TreeNode item, int depth, float x)
+			{
+				Vector2 drawL = new Vector2(x - (float)Math.Pow(2, -depth), depth + 1);
+				Vector2 drawR = new Vector2(x + (float)Math.Pow(2, -depth), depth + 1);
+				if (item.A is int)
+				{
+					visual.DrawLine(new Vector2(x, depth), drawL, Color.White, -2, -1, 2, 6);
+					visual.Font.Draw(visual.SpriteBatch, item.A.ToString(), visual.MapVector(drawL, -2, -1, 2, 6) + visual.Font.CenteredOffsetW(item.A.ToString()) * 2, Color.White, 2);
+				}
+				else if (item.A is TreeNode)
+				{
+					visual.DrawLine(new Vector2(x, depth), drawL, Color.White, -2, -1, 2, 6);
+					DrawTreeNode(item.A as TreeNode, depth + 1, drawL.X);
+				}
+				if (item.B is int)
+				{
+					visual.DrawLine(new Vector2(x, depth), drawR, Color.White, -2, -1, 2, 6);
+					visual.Font.Draw(visual.SpriteBatch, item.B.ToString(), visual.MapVector(drawR, -2, -1, 2, 6) + visual.Font.CenteredOffsetW(item.B.ToString()) * 2, Color.White, 2);
+				}
+				else if (item.B is TreeNode)
+				{
+					visual.DrawLine(new Vector2(x, depth), drawR, Color.White, -2, -1, 2, 6);
+					DrawTreeNode(item.B as TreeNode, depth + 1, drawR.X);
+				}
+			}
+
+			/*
+			 
+				int wanted = 0;
+				if (item.A is int)
+				{
+					wanted += 3 * (int)item.A;
+				}
+				else if (item.A is TreeNode)
+				{
+					wanted += 3 * Magnitude(item.A as TreeNode);
+				}
+				if (item.B is int)
+				{
+					wanted += 2 * (int)item.B;
+				}
+				else if (item.B is TreeNode)
+				{
+					wanted += 2 * Magnitude(item.B as TreeNode);
+				}
+			 */
+
 			if (input.Count == 1)
 			{
 				Reduce(main);
@@ -74,11 +136,15 @@ namespace AoC2021
 			{
 				for (int i = 1; i < pairs.Count; i++)
 				{
+					frameSpeed = Math.Max(1000 - i * 400, 16);
 					main = AddFish(main, pairs[i]);
 					Reduce(main);
 				}
 			}
+			frameSpeed = 500;
 			Console.WriteLine(Magnitude(main));
+
+			return;
 
 			void Reduce(TreeNode calc)
 			{
@@ -101,6 +167,9 @@ namespace AoC2021
 							break;
 						}
 					}
+
+					DrawTree(calc);
+					Vsync();
 				}
 			}
 
@@ -205,23 +274,45 @@ namespace AoC2021
 
 			int Magnitude(TreeNode item)
 			{
+
+				return MagnitudeDraw(item, 0, 0);
+			}
+
+			int MagnitudeDraw(TreeNode item, int depth, float x)
+			{
+				Vector2 drawL = new Vector2(x - (float)Math.Pow(2, -depth), depth + 1);
+				Vector2 drawR = new Vector2(x + (float)Math.Pow(2, -depth), depth + 1);
 				int wanted = 0;
 				if (item.A is int)
 				{
+					//visual.DrawLine(new Vector2(x, depth), drawL, Color.White, -2, 0, 2, 6);
+					//visual.Font.Draw(visual.SpriteBatch, item.A.ToString(), visual.MapVector(drawL, -2, 0, 2, 6) + visual.Font.CenteredOffsetW(item.A.ToString()) * 2, Color.White, 2);
 					wanted += 3 * (int)item.A;
 				}
 				else if (item.A is TreeNode)
 				{
-					wanted += 3 * Magnitude(item.A as TreeNode);
+					//visual.DrawLine(new Vector2(x, depth), drawL, Color.White, -2, 0, 2, 6);
+					wanted += 3 * MagnitudeDraw(item.A as TreeNode, depth + 1, drawL.X);
 				}
 				if (item.B is int)
 				{
+					//visual.DrawLine(new Vector2(x, depth), drawR, Color.White, -2, 0, 2, 6);
+					//visual.Font.Draw(visual.SpriteBatch, item.B.ToString(), visual.MapVector(drawR, -2, 0, 2, 6) + visual.Font.CenteredOffsetW(item.B.ToString()) * 2, Color.White, 2);
 					wanted += 2 * (int)item.B;
 				}
 				else if (item.B is TreeNode)
 				{
-					wanted += 2 * Magnitude(item.B as TreeNode);
+					//visual.DrawLine(new Vector2(x, depth), drawR, Color.White, -2, 0, 2, 6);
+					wanted += 2 * MagnitudeDraw(item.B as TreeNode, depth + 1, drawR.X);
 				}
+				StartDraw(false);
+				visual.Font.Draw(visual.SpriteBatch, wanted.ToString(), visual.MapVector(new Vector2(x, depth), -2, -1, 2, 6) + visual.Font.CenteredOffsetW(wanted.ToString()) * 2 + new Vector2(1, 0), Color.Black, 2);
+				visual.Font.Draw(visual.SpriteBatch, wanted.ToString(), visual.MapVector(new Vector2(x, depth), -2, -1, 2, 6) + visual.Font.CenteredOffsetW(wanted.ToString()) * 2 + new Vector2(0, 1), Color.Black, 2);
+				visual.Font.Draw(visual.SpriteBatch, wanted.ToString(), visual.MapVector(new Vector2(x, depth), -2, -1, 2, 6) + visual.Font.CenteredOffsetW(wanted.ToString()) * 2 + new Vector2(-1, 0), Color.Black, 2);
+				visual.Font.Draw(visual.SpriteBatch, wanted.ToString(), visual.MapVector(new Vector2(x, depth), -2, -1, 2, 6) + visual.Font.CenteredOffsetW(wanted.ToString()) * 2 + new Vector2(0, -1), Color.Black, 2);
+				visual.Font.Draw(visual.SpriteBatch, wanted.ToString(), visual.MapVector(new Vector2(x, depth), -2, -1, 2, 6) + visual.Font.CenteredOffsetW(wanted.ToString()) * 2, Color.Yellow, 2);
+				StopDraw();
+				Vsync();
 				return wanted;
 			}
 

@@ -21,7 +21,7 @@ namespace AoC2021
 
 			public SpriteBatch SpriteBatch;
 
-			public RenderTarget2D RenderTarget;
+			public RenderTarget2D RenderTarget, RenderTarget2;
 
 			public Font Font;
 			//private Thread thread;
@@ -64,6 +64,8 @@ namespace AoC2021
 				Font = new Font("gohu14", GraphicsDevice);
 
 				RenderTarget = new RenderTarget2D(GraphicsDevice, GraphicsWidth, GraphicsHeight, false, SurfaceFormat.Color, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
+				RenderTarget2 = new RenderTarget2D(GraphicsDevice, GraphicsWidth, GraphicsHeight, false, SurfaceFormat.Color, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
+
 
 				Window.Show();
 
@@ -97,6 +99,10 @@ namespace AoC2021
 					0, 0);
 			}
 
+			public Vector2 MapVector(Vector2 vector, int minX, int minY, int maxX, int maxY)
+			{
+				return (vector - new Vector2(minX, minY)) / new Vector2(maxX - minX, maxY - minY) * new Vector2(WindowWidth - 1, WindowHeight - 1);
+			}
 		}
 	}
 }

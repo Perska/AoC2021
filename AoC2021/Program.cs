@@ -50,21 +50,22 @@ namespace AoC2021
 			visual.GraphicsDevice.SetRenderTarget(null);
 
 			visual.GraphicsDevice.Clear(Color.Black);
-			visual.SpriteBatch.Begin();
+			visual.SpriteBatch.Begin(SpriteSortMode.Deferred, null, SamplerState.PointClamp);
 			visual.SpriteBatch.Draw(visual.RenderTarget, Vector2.Zero, Color.White);
 			visual.SpriteBatch.End();
 			//Application.DoEvents();
 			visual.GraphicsDevice.Present();
 		}
 
-		static bool AutoSpriteBatch;
+		static bool AutoSpriteBatch, OtherBuffer;
 
-		static void StartDraw(bool clear, bool autoSpriteBatch = true)
+		static void StartDraw(bool clear, bool otherBuffer = false, bool autoSpriteBatch = true)
 		{
 			AutoSpriteBatch = autoSpriteBatch;
-			visual.GraphicsDevice.SetRenderTarget(visual.RenderTarget);
+			OtherBuffer = otherBuffer;
+			visual.GraphicsDevice.SetRenderTarget(otherBuffer ? visual.RenderTarget2 : visual.RenderTarget);
 			if (clear) visual.GraphicsDevice.Clear(Color.Transparent);
-			if (autoSpriteBatch) visual.SpriteBatch.Begin();
+			if (autoSpriteBatch) visual.SpriteBatch.Begin(SpriteSortMode.Deferred, null, SamplerState.PointClamp);
 		}
 
 		static void StopDraw()
@@ -74,6 +75,8 @@ namespace AoC2021
 			visual.GraphicsDevice.Clear(Color.Black);
 			visual.SpriteBatch.Begin();
 			visual.SpriteBatch.Draw(visual.RenderTarget, Vector2.Zero, Color.White);
+			if (OtherBuffer)
+				visual.SpriteBatch.Draw(visual.RenderTarget2, Vector2.Zero, Color.White);
 			visual.SpriteBatch.End();
 
 			//Application.DoEvents();
