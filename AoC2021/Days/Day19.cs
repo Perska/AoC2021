@@ -107,23 +107,21 @@ namespace AoC2021
 					}
 				}
 			}
-			SparseMatrix3D<bool> deducedMap = new SparseMatrix3D<bool>();
-			deducedMap.Join(maps[0][0], (0, 0, 0));
-			List<(int X, int Y, int Z)> scannerSpots = new List<(int X, int Y, int Z)>();
-			scannerSpots.Add((0, 0, 0));
 
-			List<SparseMatrix3D<bool>[]> left = new List<SparseMatrix3D<bool>[]>(maps);
-			left.RemoveAt(0);
-			while (left.Count > 0)
+			List<((int A, int B, int C), (int X, int Y, int Z))> connections = new List<((int A, int B, int C), (int X, int Y, int Z))>();
+
+			for (int k = 0; k < maps.Count; k++)
 			{
-				for (int i = 0; i < left.Count; i++)
+				var baseMap = maps[k][0];
+				for (int i = 1; i < maps.Count; i++)
 				{
-					for (int j = 0; j < left[i].Length; j++)
+					if (k == i) continue;
+					for (int j = 0; j < maps[i].Length; j++)
 					{
-						map = left[i][j];
+						map = maps[i][j];
 						foreach (var a in map.Map)
 						{
-							foreach (var b in deducedMap.Map)
+							foreach (var b in baseMap.Map)
 							{
 								(int x, int y, int z) = (a.Key.X - b.Key.X, a.Key.Y - b.Key.Y, a.Key.Z - b.Key.Z);
 								int counted = 0;
@@ -131,16 +129,14 @@ namespace AoC2021
 								foreach (var item in map.Map)
 								{
 									(int sx, int sy, int sz) = item.Key;
-									if (deducedMap[sx - x, sy - y, sz - z])
+									if (baseMap[sx - x, sy - y, sz - z])
 									{
 										counted++;
 									}
 									inspected++;
 									if (counted >= 12)
 									{
-										scannerSpots.Add((x, y, z));
-										deducedMap.Join(map, (x, y, z));
-										left.Remove(left[i]);
+										connections.Add(((k, i, j), (x, y, z)));
 										goto foundMatch;
 									}
 									if (map.Map.Count - inspected + counted < 12)
@@ -149,6 +145,68 @@ namespace AoC2021
 									}
 								}
 							}
+						}
+					foundMatch:;
+					}
+				}
+			}
+			;
+			
+
+			SparseMatrix3D<bool> deducedMap = new SparseMatrix3D<bool>();
+			bool[] onMap = new bool[maps.Count];
+			deducedMap.Join(maps[0][0], (0, 0, 0));
+			onMap[0] = true;
+			((int X, int Y, int Z) pos, int rot)[] scannerSpots = new ((int X, int Y, int Z), int rot)[maps.Count];
+			scannerSpots[0] = ((0, 0, 0), 0);
+
+			//List<(SparseMatrix3D<bool>, int)[]> left = new List<SparseMatrix3D<bool>[]>(maps.Where(s => (s, 0)));
+			//left.RemoveAt(0);
+			while (onMap.Contains(true))
+			{
+				for (int i = 0; i < maps.Count; i++)
+				{
+					if (i == 2)
+						;
+					if (onMap[i]) continue;
+					var where = connections.FirstOrDefault(s => s.Item1.B == i && onMap[s.Item1.A]);
+					if (where.Item1.A == where.Item1.B) continue;
+					// = where.Item2;
+					var offset = scannerSpots[where.Item1.A];
+					(int x, int y, int z) = UnRotateVector(where.Item2, offset.rot);
+					(x, y, z) = (x + offset.pos.X, y + offset.pos.Y, z + offset.pos.Z);
+					for (int j = 0; j < maps[i].Length; j++)
+					{
+						map = maps[i][j];
+						//foreach (var a in map.Map)
+						//{
+						//foreach (var b in deducedMap.Map)
+						//{
+							//(int x, int y, int z) = (a.Key.X - b.Key.X, a.Key.Y - b.Key.Y, a.Key.Z - b.Key.Z);
+							int counted = 0;
+							int inspected = 0;
+							foreach (var item in map.Map)
+							{
+								(int sx, int sy, int sz) = item.Key;
+								if (deducedMap[sx - x, sy - y, sz - z])
+								{
+									counted++;
+								}
+								inspected++;
+								if (counted >= 12)
+								{
+								scannerSpots[i] = ((x, y, z), j);
+									deducedMap.Join(map, (x, y, z));
+									onMap[i] = true;
+									//left.Remove(left[i]);
+									goto foundMatch;
+								}
+								if (map.Map.Count - inspected + counted < 12)
+								{
+									break;
+								}
+								//	}
+							//}
 						}
 					}
 				}
@@ -160,7 +218,7 @@ namespace AoC2021
 			{
 				foreach (var b in scannerSpots)
 				{
-					highest = Math.Max(highest, Manhattan(a, b));
+					highest = Math.Max(highest, Manhattan(a.pos, b.pos));
 				}
 			}
 			Console.WriteLine(highest);
@@ -169,6 +227,80 @@ namespace AoC2021
 			{
 				return Math.Abs(a.X - b.X) + Math.Abs(a.Y - b.Y) + Math.Abs(a.Z - b.Z);
 			}
+
+			(int X, int Y, int Z) RotateVector((int X, int Y, int Z) vector, int rotation)
+			{
+				(int x, int y, int z) = vector;
+				switch (rotation % 6)
+				{
+					case 1:
+						(x, y, z) = (x, z, -y);
+						break;
+					case 2:
+						(x, y, z) = (x, -y, -z);
+						break;
+					case 3:
+						(x, y, z) = (x, -z, y);
+						break;
+					case 4:
+						(x, y, z) = (-y, x, z);
+						break;
+					case 5:
+						(x, y, z) = (y, -x, z);
+						break;
+				}
+				switch (rotation / 6 % 3)
+				{
+					case 1:
+						(x, y, z) = (z, y, -x);
+						break;
+					case 2:
+						(x, y, z) = (-x, y, -z);
+						break;
+					case 3:
+						(x, y, z) = (-z, y, x);
+						break;
+				}
+				return (x, y, z);
+			}
+
+			(int X, int Y, int Z) UnRotateVector((int X, int Y, int Z) vector, int rotation)
+			{
+				(int x, int y, int z) = vector;
+				switch (rotation / 6 % 3)
+				{
+					case 1:
+						(x, y, z) = (-z, y, x);
+						break;
+					case 2:
+						(x, y, z) = (-x, y, -z);
+						break;
+					case 3:
+						(x, y, z) = (z, y, -x);
+						break;
+				}
+				switch (rotation % 6)
+				{
+					case 1:
+						(x, y, z) = (x, -z, y);
+						break;
+					case 2:
+						(x, y, z) = (x, -y, -z);
+						break;
+					case 3:
+						(x, y, z) = (x, z, -y);
+						break;
+					case 4:
+						(x, y, z) = (y, -x, z);
+						break;
+					case 5:
+						(x, y, z) = (-y, x, z);
+						break;
+				}
+				return (x, y, z);
+			}
+
+
 		}
 	}
 }
