@@ -24,6 +24,7 @@ namespace AoC2021
 			}
 			Console.WriteLine($"{(score1 >= 1000 ? score2 : score1) * tosses}");
 
+			(int A, int B)[] repeat = new (int, int)[] { (3, 1), (4, 3), (5, 6), (6, 7), (7, 6), (8, 3), (9, 1) };
 			p1 = _p1;
 			p2 = _p2;
 			score1 = 0;
@@ -34,17 +35,11 @@ namespace AoC2021
 			long p2w = 0;
 			Dictionary<(int P1, int P2, int S1, int S2, bool Turn, int Toss), (long, long)> winCache = new Dictionary<(int P1, int P2, int S1, int S2, bool Turn, int Toss), (long, long)>();
 			
-			for (int i = 1; i <= 3; i++)
+			for (int i = 0; i < repeat.Length; i++)
 			{
-				for (int j = 1; j <= 3; j++)
-				{
-					for (int k = 1; k <= 3; k++)
-					{
-						(long a, long b) = QTurn(p1, 0, p2, 0, false, i + j + k);
-						p1w += a;
-						p2w += b;
-					}
-				}
+				(long a, long b) = QTurn(p1, 0, p2, 0, false, repeat[i].A);
+				p1w += a * repeat[i].B;
+				p2w += b * repeat[i].B;
 			}
 			Console.WriteLine($"{(p1w > p2w ? p1w : p2w)}");
 			
@@ -102,17 +97,11 @@ namespace AoC2021
 						sco2 = score;
 					}
 					long win1 = 0, win2 = 0;
-					for (int i = 1; i <= 3; i++)
+					for (int i = 0; i < repeat.Length; i++)
 					{
-						for (int j = 1; j <= 3; j++)
-						{
-							for (int k = 1; k <= 3; k++)
-							{
-								(long a, long b) = QTurn(pos1, sco1, pos2, sco2, !player, i + j + k);
-								win1 += a;
-								win2 += b;
-							}
-						}
+						(long a, long b) = QTurn(pos1, sco1, pos2, sco2, !player, repeat[i].A);
+						win1 += a * repeat[i].B;
+						win2 += b * repeat[i].B;
 					}
 					winCache[(pr1, pr2, sc1, sc2, player, toss)] = (win1, win2);
 					return (win1, win2);
