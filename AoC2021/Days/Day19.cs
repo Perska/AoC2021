@@ -25,7 +25,10 @@ namespace AoC2021
 				}
 				set
 				{
-					Map[(x, y, z)] = value;
+					if (EqualityComparer<T>.Default.Equals(value, default(T)))
+						Map.Remove((x, y, z));
+					else
+						Map[(x, y, z)] = value;
 				}
 			}
 
